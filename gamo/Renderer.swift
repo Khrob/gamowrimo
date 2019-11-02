@@ -21,6 +21,8 @@ class Metal_View : MTKView
     var commandQueue: MTLCommandQueue!
     var compute_pipeline_state: MTLComputePipelineState!
     
+    override var acceptsFirstResponder: Bool { return true }
+    
     required init(coder: NSCoder)
     {
         super.init(coder: coder)
@@ -65,5 +67,38 @@ class Metal_View : MTKView
             print ("Couldn't create a valid drawable, buffer or encoder")
         }
     }
+    
+    override func keyDown(with event: NSEvent)
+    {
+        switch event.keyCode {
+        case Left_Arrow_Key, A_Key  : input.left_pressed  = true
+        case Right_Arrow_Key, D_Key : input.right_pressed = true
+        case Down_Arrow_Key, S_Key  : input.down_pressed  = true
+        case Up_Arrow_Key, W_Key    : input.up_pressed    = true   
+        default: break
+        }
+    }
+    
+    override func keyUp(with event: NSEvent)
+    {
+        switch event.keyCode {
+        case Left_Arrow_Key, A_Key  : input.left_pressed  = false
+        case Right_Arrow_Key, D_Key : input.right_pressed = false
+        case Down_Arrow_Key, S_Key  : input.down_pressed  = false
+        case Up_Arrow_Key, W_Key    : input.up_pressed    = false
+        default: break
+        }
+    }
 }
 
+let Left_Arrow_Key  : UInt16 = 0x7B
+let Right_Arrow_Key : UInt16 = 0x7C
+let Down_Arrow_Key  : UInt16 = 0x7D
+let Up_Arrow_Key    : UInt16 = 0x7E
+let W_Key           : UInt16 = 0xFF
+let A_Key           : UInt16 = 0x0D
+let S_Key           : UInt16 = 0x01
+let D_Key           : UInt16 = 0x02
+let F_Key           : UInt16 = 0x03
+let Q_Key           : UInt16 = 0x0C
+let R_Key           : UInt16 = 0x0F
