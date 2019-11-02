@@ -26,6 +26,9 @@ class Metal_View : MTKView
     required init(coder: NSCoder)
     {
         super.init(coder: coder)
+        
+        // Configure the Metal stuff
+        
         framebufferOnly = false
         device = MTLCreateSystemDefaultDevice()!
         commandQueue = device!.makeCommandQueue()
@@ -33,6 +36,8 @@ class Metal_View : MTKView
         let compute = library.makeFunction(name: "compute")!
         do { try compute_pipeline_state = device!.makeComputePipelineState(function: compute) }
         catch let error { print(error) }
+        
+        // Set up the game stuff
         
         startup()
         
@@ -68,13 +73,31 @@ class Metal_View : MTKView
         }
     }
     
+    // MARK: Keyboard Handling
+    
+    let ESC_Key         : UInt16 = 0x35
+    let Tilde_Key       : UInt16 = 0x32
+    let Left_Arrow_Key  : UInt16 = 0x7B
+    let Right_Arrow_Key : UInt16 = 0x7C
+    let Down_Arrow_Key  : UInt16 = 0x7D
+    let Up_Arrow_Key    : UInt16 = 0x7E
+    let W_Key           : UInt16 = 0x0D
+    let A_Key           : UInt16 = 0x00
+    let S_Key           : UInt16 = 0x01
+    let D_Key           : UInt16 = 0x02
+    let F_Key           : UInt16 = 0x03
+    let Q_Key           : UInt16 = 0x0C
+    let R_Key           : UInt16 = 0x0F
+    
     override func keyDown(with event: NSEvent)
     {
+        print ("pressed key: \(event.keyCode)")
+        
         switch event.keyCode {
         case Left_Arrow_Key, A_Key  : input.left_pressed  = true
         case Right_Arrow_Key, D_Key : input.right_pressed = true
         case Down_Arrow_Key, S_Key  : input.down_pressed  = true
-        case Up_Arrow_Key, W_Key    : input.up_pressed    = true   
+        case Up_Arrow_Key, W_Key    : input.up_pressed    = true
         default: break
         }
     }
@@ -89,16 +112,35 @@ class Metal_View : MTKView
         default: break
         }
     }
+    
+    // MARK: Mouse Tracking
+    
+    var tracking_area : NSTrackingArea?
+    
+    override func updateTrackingAreas()
+    {
+        super.updateTrackingAreas()
+        if tracking_area != nil { removeTrackingArea(tracking_area!) }
+        let tracking_options : NSTrackingArea.Options = [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow]
+        tracking_area = NSTrackingArea(rect: bounds, options: tracking_options, owner: self, userInfo: nil)
+        addTrackingArea(tracking_area!)
+    }
+    
+    override func mouseMoved(with event: NSEvent)
+    {
+        print (#function)
+        print (event)
+    }
+    
+    override func mouseEntered(with event: NSEvent)
+    {
+        print (#function)
+        print (event)
+    }
+    
+    override func mouseExited(with event: NSEvent)
+    {
+        print (#function)
+        print (event)
+    }
 }
-
-let Left_Arrow_Key  : UInt16 = 0x7B
-let Right_Arrow_Key : UInt16 = 0x7C
-let Down_Arrow_Key  : UInt16 = 0x7D
-let Up_Arrow_Key    : UInt16 = 0x7E
-let W_Key           : UInt16 = 0x0D
-let A_Key           : UInt16 = 0x00
-let S_Key           : UInt16 = 0x01
-let D_Key           : UInt16 = 0x02
-let F_Key           : UInt16 = 0x03
-let Q_Key           : UInt16 = 0x0C
-let R_Key           : UInt16 = 0x0F
