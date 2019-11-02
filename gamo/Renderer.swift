@@ -127,21 +127,28 @@ class Metal_View : MTKView
     
     override func mouseMoved(with event: NSEvent)
     {
-        print (#function)
-        print (event)
+        if grabbing_mouse {
+            
+            let rect_in_screen = window!.convertToScreen(frame)
+            let centre_x = rect_in_screen.origin.x + rect_in_screen.size.width / 2.0
+            let centre_y = window!.screen!.frame.size.height - (rect_in_screen.origin.y + rect_in_screen.size.height / 2.0)
+            let centre_point = CGPoint(x: centre_x, y: centre_y)
+            
+            CGWarpMouseCursorPosition(centre_point)
+            
+            input.mouse_x = Float(event.deltaX)
+            input.mouse_y = Float(event.deltaY)
+        }
     }
     
     override func mouseEntered(with event: NSEvent)
     {
-        print (#function)
         if grabbing_mouse { NSCursor.hide() }
-        
     }
     
     override func mouseExited(with event: NSEvent)
     {
-        print (#function)
-        if grabbing_mouse { NSCursor.unhide() }
+        NSCursor.unhide()
     }
     
     // MARK: UI Changes
@@ -154,6 +161,16 @@ class Metal_View : MTKView
     {
         grabbing_mouse.toggle()
         grabbing_mouse ? NSCursor.hide() : NSCursor.unhide()
+
+        // Move the mouse to the centre of the window
+        // TODO: Save the original position and put the mouse back there when done?
+        if grabbing_mouse {
+            let rect_in_screen = window!.convertToScreen(frame)
+            let centre_x = rect_in_screen.origin.x + rect_in_screen.size.width / 2.0
+            let centre_y = window!.screen!.frame.size.height - (rect_in_screen.origin.y + rect_in_screen.size.height / 2.0)
+            let centre_point = CGPoint(x: centre_x, y: centre_y)
+            CGWarpMouseCursorPosition(centre_point)
+        }
     }
     
 }
