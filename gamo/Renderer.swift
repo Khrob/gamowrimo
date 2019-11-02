@@ -21,8 +21,6 @@ class Metal_View : MTKView
     var commandQueue: MTLCommandQueue!
     var compute_pipeline_state: MTLComputePipelineState!
     
-    override var acceptsFirstResponder: Bool { return true }
-    
     required init(coder: NSCoder)
     {
         super.init(coder: coder)
@@ -98,6 +96,7 @@ class Metal_View : MTKView
         case Right_Arrow_Key, D_Key : input.right_pressed = true
         case Down_Arrow_Key, S_Key  : input.down_pressed  = true
         case Up_Arrow_Key, W_Key    : input.up_pressed    = true
+        case ESC_Key: toggle_grab_mouse()
         default: break
         }
     }
@@ -135,12 +134,26 @@ class Metal_View : MTKView
     override func mouseEntered(with event: NSEvent)
     {
         print (#function)
-        print (event)
+        if grabbing_mouse { NSCursor.hide() }
+        
     }
     
     override func mouseExited(with event: NSEvent)
     {
         print (#function)
-        print (event)
+        if grabbing_mouse { NSCursor.unhide() }
     }
+    
+    // MARK: UI Changes
+    
+    override var acceptsFirstResponder: Bool { return true }
+    
+    var grabbing_mouse : Bool = false
+    
+    func toggle_grab_mouse ()
+    {
+        grabbing_mouse.toggle()
+        grabbing_mouse ? NSCursor.hide() : NSCursor.unhide()
+    }
+    
 }
