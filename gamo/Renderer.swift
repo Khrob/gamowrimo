@@ -10,10 +10,10 @@ import MetalKit
 
 struct Vector4
 {
-    var x:Float
-    var y:Float
-    var z:Float
-    var w:Float
+    var x : Float = 0.0
+    var y : Float = 0.0
+    var z : Float = 0.0
+    var w : Float = 0.0
 }
 
 class Metal_View : MTKView
@@ -95,8 +95,8 @@ let Left_Arrow_Key  : UInt16 = 0x7B
 let Right_Arrow_Key : UInt16 = 0x7C
 let Down_Arrow_Key  : UInt16 = 0x7D
 let Up_Arrow_Key    : UInt16 = 0x7E
-let W_Key           : UInt16 = 0xFF
-let A_Key           : UInt16 = 0x0D
+let W_Key           : UInt16 = 0x0D
+let A_Key           : UInt16 = 0x00
 let S_Key           : UInt16 = 0x01
 let D_Key           : UInt16 = 0x02
 let F_Key           : UInt16 = 0x03

@@ -10,14 +10,14 @@ import MetalKit
 
 struct Uniforms
 {
-    var time            : Float
-    var camera          : Vector4
-    var capsule_count   : Int8
+    var time            : Float   = 0.0
+    var camera          : Vector4 = Vector4()
+    var capsule_count   : Int8    = 0
 }
 
 let Uniforms_Size   = MemoryLayout<Uniforms>.stride
+var uniforms        = Uniforms()
 var uniforms_buffer : MTLBuffer!
-var uniforms        : Uniforms!
 
 func update_uniforms ()
 {

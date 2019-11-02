@@ -21,11 +21,22 @@ func startup ()
 
 func update ()
 {
+    respond_to_input()
     uniforms.time += 0.05
     uniforms.capsule_count = Int8(test_capsules.count)
     let offset = 1.5 + (0.5*sin(uniforms.time))
-    uniforms.camera = Vector4(x: 0, y: 3 - offset, z: -1, w: 1)
+    uniforms.camera.y = 3 - offset
     test_capsules[2].start.y = offset
     update_uniforms()
     update_capsules(&test_capsules)
+}
+
+func respond_to_input ()
+{
+    let Small_Amount:Float = 0.1
+        
+    if input.up_pressed    { uniforms.camera.z += Small_Amount }
+    if input.down_pressed  { uniforms.camera.z -= Small_Amount }
+    if input.left_pressed  { uniforms.camera.x += Small_Amount }
+    if input.right_pressed { uniforms.camera.x -= Small_Amount }
 }
