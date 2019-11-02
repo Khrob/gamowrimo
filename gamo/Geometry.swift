@@ -10,11 +10,16 @@ import MetalKit
 
 struct Capsule
 {
-    let start:Vector4
-    let end:Vector4
+    var start :Vector4
+    var end   :Vector4
 }
 
 var capsules_buffer : MTLBuffer!
+
+func update_capsules (_ geometry:inout [Capsule])
+{
+    memcpy(capsules_buffer.contents(), geometry, MemoryLayout<Capsule>.stride * geometry.count)
+}
 
 func make_capsules_buffer (_ device:MTLDevice, geometry:inout [Capsule]) -> MTLBuffer?
 {

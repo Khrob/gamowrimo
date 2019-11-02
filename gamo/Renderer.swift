@@ -10,10 +10,10 @@ import MetalKit
 
 struct Vector4
 {
-    let x:Float
-    let y:Float
-    let z:Float
-    let w:Float
+    var x:Float
+    var y:Float
+    var z:Float
+    var w:Float
 }
 
 class Metal_View : MTKView

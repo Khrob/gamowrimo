@@ -23,6 +23,9 @@ func update ()
 {
     uniforms.time += 0.05
     uniforms.capsule_count = Int8(test_capsules.count)
-    uniforms.camera = Vector4(x: 0, y: 1.1 + sin(uniforms.time), z: -1, w: 1)
+    let offset = 1.5 + (0.5*sin(uniforms.time))
+    uniforms.camera = Vector4(x: 0, y: 3 - offset, z: -1, w: 1)
+    test_capsules[2].start.y = offset
     update_uniforms()
+    update_capsules(&test_capsules)
 }
