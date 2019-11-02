@@ -39,4 +39,8 @@ func respond_to_input ()
     if input.down_pressed  { uniforms.camera.z -= Small_Amount }
     if input.left_pressed  { uniforms.camera.x += Small_Amount }
     if input.right_pressed { uniforms.camera.x -= Small_Amount }
+    
+    uniforms.camera.x += input.mouse_x
+    uniforms.camera.z += input.mouse_y
+    
 }
