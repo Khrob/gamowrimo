@@ -9,14 +9,16 @@
 import Foundation
 
 var test_capsules = [
-    Capsule(start: Vector4(x: -2, y: 1, z: 6, w: 0.50), end: Vector4(x: -2, y: 3, z: 6, w: 0.25)),
-    Capsule(start: Vector4(x:  0, y: 1, z: 6, w: 0.50), end: Vector4(x:  0, y: 3, z: 6, w: 0.75)),
-    Capsule(start: Vector4(x:  2, y: 1, z: 6, w: 0.50), end: Vector4(x:  2, y: 3, z: 6, w: 0.10))
+    Capsule(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 3, z:   0, w: 0.10)),
+    Capsule(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 0, z:   6, w: 0.75)),
+    Capsule(start: Vector4(x:  -4, y: 1, z:   0, w: 0.50),  end: Vector4(x:  -4, y: 3, z:   0, w: 0.50)),
+    Capsule(start: Vector4(x:  10, y: 1, z: -10, w: 0.10),  end: Vector4(x:  10, y: 1, z: -10, w: 0.10)),
 ]
 
 func startup ()
 {
-    uniforms = Uniforms(time: 0, camera: Vector4(x: 1, y: 2, z: 3, w: 4), capsule_count: Int8(test_capsules.count))
+    uniforms = Uniforms(time: 0, camera: Vector4(x: 0, y: 2, z: -10, w: 1), capsule_count: Int8(test_capsules.count))
+//    uniforms.camera_yaw = Float.pi / 2.0
 }
 
 func update ()
@@ -24,23 +26,41 @@ func update ()
     respond_to_input()
     uniforms.time += 0.05
     uniforms.capsule_count = Int8(test_capsules.count)
-    let offset = 1.5 + (0.5*sin(uniforms.time))
-    uniforms.camera.y = 3 - offset
-    test_capsules[2].start.y = offset
     update_uniforms()
     update_capsules(&test_capsules)
 }
 
 func respond_to_input ()
 {
-    let Small_Amount:Float = 0.1
-        
-    if input.up_pressed    { uniforms.camera.z += Small_Amount }
-    if input.down_pressed  { uniforms.camera.z -= Small_Amount }
-    if input.left_pressed  { uniforms.camera.x += Small_Amount }
-    if input.right_pressed { uniforms.camera.x -= Small_Amount }
+    let Movement_Scale:Float = 0.5
+    let Mouse_Scale:Float    = 100.0
     
-    uniforms.camera.x += input.mouse_x
-    uniforms.camera.z += input.mouse_y
+    uniforms.camera_yaw   += (input.mouse_x / Mouse_Scale)
+    uniforms.camera_pitch += (input.mouse_y / Mouse_Scale)
+    
+    uniforms.camera_pitch = min ( max (uniforms.camera_pitch, -Float.pi / 8.0), Float.pi / 8.0)
+    
+//    look_at.z += cos(uniforms.camera_yaw);
+//    look_at.x += sin(uniforms.camera_yaw);
+    
+    if input.up_pressed    {
+        uniforms.camera.z += cos (uniforms.camera_yaw) * Movement_Scale
+        uniforms.camera.x += sin (uniforms.camera_yaw) * Movement_Scale
+    }
+    
+    if input.down_pressed  {
+        uniforms.camera.z -= cos (uniforms.camera_yaw) * Movement_Scale
+        uniforms.camera.x -= sin (uniforms.camera_yaw) * Movement_Scale
+    }
+    
+    if input.left_pressed  {
+        uniforms.camera.z += sin (uniforms.camera_yaw) * Movement_Scale
+        uniforms.camera.x -= cos (uniforms.camera_yaw) * Movement_Scale
+    }
+    
+    if input.right_pressed {
+        uniforms.camera.z -= sin (uniforms.camera_yaw) * Movement_Scale
+        uniforms.camera.x += cos (uniforms.camera_yaw) * Movement_Scale
+    }
     
 }

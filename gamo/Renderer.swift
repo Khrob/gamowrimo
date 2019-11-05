@@ -51,6 +51,7 @@ class Metal_View : MTKView
             let commandBuffer = commandQueue!.makeCommandBuffer(),
             let commandEncoder = commandBuffer.makeComputeCommandEncoder()
         {
+            
             let thread_group_count = MTLSizeMake(8, 8, 1)
             let thread_groups = MTLSizeMake(drawable.texture.width / thread_group_count.width, drawable.texture.height / thread_group_count.height, 1)
             

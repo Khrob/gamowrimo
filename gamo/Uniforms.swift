@@ -12,6 +12,8 @@ struct Uniforms
 {
     var time            : Float   = 0.0
     var camera          : Vector4 = Vector4()
+    var camera_yaw      : Float   = 0
+    var camera_pitch    : Float   = 0
     var capsule_count   : Int8    = 0
 }
 
