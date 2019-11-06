@@ -65,7 +65,6 @@
 		B98B9402236C8B2900818D70 /* gamo */ = {
 			isa = PBXGroup;
 			children = (
-				B98B9403236C8B2900818D70 /* AppDelegate.swift */,
 				B98B941B236C93F400818D70 /* Geometry.swift */,
 				B98B941F236CA9AF00818D70 /* Input.swift */,
 				B98B941D236CA63B00818D70 /* Main.swift */,
@@ -73,12 +72,21 @@
 				B98B9415236C8EF400818D70 /* Renderer.metal */,
 				B98B9419236C939100818D70 /* Uniforms.swift */,
 				B98B9405236C8B2900818D70 /* ViewController.swift */,
+				B9F3CFCC2372219500D7B9FE /* App Stuff */,
+			);
+			path = gamo;
+			sourceTree = "<group>";
+		};
+		B9F3CFCC2372219500D7B9FE /* App Stuff */ = {
+			isa = PBXGroup;
+			children = (
+				B98B9403236C8B2900818D70 /* AppDelegate.swift */,
 				B98B9407236C8B2C00818D70 /* Assets.xcassets */,
 				B98B9409236C8B2C00818D70 /* Main.storyboard */,
 				B98B940C236C8B2C00818D70 /* Info.plist */,
 				B98B940D236C8B2C00818D70 /* gamo.entitlements */,
 			);
-			path = gamo;
+			path = "App Stuff";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -293,12 +301,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = gamo/gamo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "gamo/App Stuff/gamo.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2Y9PFJY5N3;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = gamo/Info.plist;
+				INFOPLIST_FILE = "gamo/App Stuff/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -313,12 +322,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = gamo/gamo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "gamo/App Stuff/gamo.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2Y9PFJY5N3;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = gamo/Info.plist;
+				INFOPLIST_FILE = "gamo/App Stuff/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

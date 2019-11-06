@@ -31,9 +31,8 @@ struct
 Uniforms
 {
     float          t;
-    packed_float4  camera;
-    float          camera_yaw;
-    float          camera_pitch;
+    packed_float3  camera_origin;
+    packed_float3  camera_lookat;
     int            capsule_count;
 };
 
@@ -122,7 +121,7 @@ float
 get_light (float3 p, Uniforms uniforms, constant Capsule * capsules)
 {
     vector_float3 light_pos = float3(0, 5, 6);
-//    light_pos.xz += vector_float2(sin(uniforms.t), cos(uniforms.t)) * 4;
+    light_pos.xz += vector_float2(sin(uniforms.t), cos(uniforms.t)) * 4;
     vector_float3 l = normalize(light_pos-p);
     vector_float3 n = get_normal(p, capsules, uniforms);
     float diff = clamp(dot(n,l), 0., 1.);
@@ -132,14 +131,15 @@ get_light (float3 p, Uniforms uniforms, constant Capsule * capsules)
 }
 
 float3x3
-setCamera (vector_float3 ro, vector_float3 ta, float cr )
+set_camera (vector_float3 origin, vector_float3 at, float roll )
 {
-    vector_float3 cw = normalize(ta-ro);
-    vector_float3 cp = vector_float3(sin(cr), cos(cr),0.0);
-    vector_float3 cu = normalize ( cross(cw,cp) );
-    vector_float3 cv =           ( cross(cu,cw) );
-    return float3x3( cu, cv, cw );
+    vector_float3 cw = normalize(at-origin);
+    vector_float3 cp = vector_float3(sin(roll), cos(roll),0.0);
+    vector_float3 cu = normalize(cross(cw,cp));
+    vector_float3 cv = cross(cu,cw);
+    return float3x3 ( cu, cv, cw );
 }
+
 
 kernel
 void
@@ -151,19 +151,12 @@ compute (texture2d<float, access::write> output [[texture(0)]],
     int width = output.get_width();
     int height = output.get_height();
     float2 resolution = float2(width,height);
-    
     vector_float2 uv = vector_float2(float2(gid)-.5*resolution)/resolution[1];
-    vector_float3 look_at = uniforms.camera.xyz;
-    
-    look_at.z += cos(uniforms.camera_yaw);
-    look_at.x += sin(uniforms.camera_yaw);
-    
-    vector_float3 origin  = uniforms.camera.xyz;
-    float3x3 ca = setCamera( origin, look_at, M_PI_F );
+    float3x3 ca = set_camera( uniforms.camera_origin, uniforms.camera_lookat, M_PI_F );
     float fov = 0.5;
     float3 direction = ca * normalize( float3(uv, fov) );
-    float  d = ray_march (origin, direction, &capsules, uniforms);
-    float3 p = origin + (direction * d);
+    float  d = ray_march (uniforms.camera_origin, direction, &capsules, uniforms);
+    float3 p = uniforms.camera_origin + (direction * d);
     float  diffuse = get_light(p, uniforms, &capsules);
     diffuse = pow(diffuse, 0.4545);
     float4 colour = float4 (float3(diffuse),1.);
@@ -171,12 +164,3 @@ compute (texture2d<float, access::write> output [[texture(0)]],
 }
 
 
-float3x3
-set_camera (vector_float3 origin, vector_float3 at, float roll )
-{
-    vector_float3 cw = normalize(at-origin);
-    vector_float3 cp = vector_float3(sin(roll), cos(roll),0.0);
-    vector_float3 cu = normalize( cross(cw,cp) );
-    vector_float3 cv =          ( cross(cu,cw) );
-    return float3x3( cu, cv, cw );
-}

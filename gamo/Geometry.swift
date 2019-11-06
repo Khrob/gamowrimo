@@ -18,11 +18,16 @@ var capsules_buffer : MTLBuffer!
 
 func update_capsules (_ geometry:inout [Capsule])
 {
-    memcpy(capsules_buffer.contents(), geometry, MemoryLayout<Capsule>.stride * geometry.count)
+    capsules_buffer = make_capsules_buffer(render_device, geometry: &geometry)
+    if capsules_buffer == nil {
+        print("\(#function) - update of buffer failed")
+        exit(EXIT_FAILURE)
+    }
 }
 
 func make_capsules_buffer (_ device:MTLDevice, geometry:inout [Capsule]) -> MTLBuffer?
 {
+    if geometry.count == 0 { return nil }
     if let capsules_buffer = device.makeBuffer(length: MemoryLayout<Capsule>.stride * geometry.count, options: []) {
         let pointer = capsules_buffer.contents()
         memcpy(pointer, &geometry, MemoryLayout<Capsule>.stride * geometry.count)

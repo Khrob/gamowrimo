@@ -8,6 +8,13 @@
 
 import MetalKit
 
+struct Vector3
+{
+    var x : Float = 0.0
+    var y : Float = 0.0
+    var z : Float = 0.0
+}
+
 struct Vector4
 {
     var x : Float = 0.0
@@ -15,6 +22,8 @@ struct Vector4
     var z : Float = 0.0
     var w : Float = 0.0
 }
+
+var render_device : MTLDevice!
 
 class Metal_View : MTKView
 {
@@ -29,6 +38,7 @@ class Metal_View : MTKView
         
         framebufferOnly = false
         device = MTLCreateSystemDefaultDevice()!
+        render_device = device
         commandQueue = device!.makeCommandQueue()
         let library = device!.makeDefaultLibrary()!
         let compute = library.makeFunction(name: "compute")!
@@ -40,7 +50,7 @@ class Metal_View : MTKView
         startup()
         
         uniforms_buffer = make_uniforms_buffer(device!, uniforms: &uniforms)
-        capsules_buffer = make_capsules_buffer(device!, geometry: &test_capsules)
+        capsules_buffer = make_capsules_buffer(device!, geometry: &capsule_geometry)
     }
     
     override func draw()
