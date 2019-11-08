@@ -45,7 +45,7 @@ var world_geometry:[Capsule] = []
 
 func startup ()
 {
-    uniforms = Uniforms(time: 0, camera_origin: Vector3(x: 0, y: 2, z: -10), camera_lookat: Vector3(x: 0, y: 2, z: 0), capsule_count: Int8(capsule_geometry.count))
+    uniforms = Uniforms(time: 0, camera_origin: Vector3(0, 2, -10), camera_lookat: Vector3(), capsule_count: Int8(capsule_geometry.count))
     world_geometry = generate_world_geo(30)
     capsule_geometry.removeAll()
     capsule_geometry.append(contentsOf: origin_geometry)
@@ -57,7 +57,6 @@ func update ()
     respond_to_input()
     uniforms.time += 0.05
     uniforms.capsule_count = Int8(capsule_geometry.count)
-    update_player()
     
     let camera = camera_position(player, player_camera)
     uniforms.camera_origin = camera.origin
@@ -114,7 +113,7 @@ func respond_to_input ()
 {
     let Mouse_Scale:Float    = 100.0
     let Movement_Scale:Float = 0.1
-    let Turn_Scale:Float     = 10.0
+    let Turn_Scale:Float     = 30.0
     
     player_camera.vertical_angle   += (input.mouse_y / Mouse_Scale)
     player_camera.horizontal_angle += (input.mouse_x / Mouse_Scale)
@@ -134,20 +133,17 @@ func respond_to_input ()
         player.position.z -= cos (player.direction) * Movement_Scale
         player.position.x -= sin (player.direction) * Movement_Scale
     }
-}
-
-func update_player ()
-{
-
+    
+    player.position.y = (sin(player.position.x) + sin(player.position.z)) / 3.0
 }
 
 func camera_position (_ player:Player, _ player_camera:Player_Camera) -> Camera
 {
-    let look_at = Vector3(x:player.position.x, y:player.position.y + (player.height * 0.75), z: player.position.z)
+    let look_at = Vector3(player.position.x, player.position.y + (player.height * 0.75), player.position.z)
     let camera_angle  = Float.pi + player_camera.horizontal_angle
     let camera_origin = Vector3 (
-        x: look_at.x - sin(camera_angle) * player_camera.distance,
-        y: look_at.y + sin (player_camera.vertical_angle) * player_camera.distance,
-        z: look_at.z + cos(camera_angle) * player_camera.distance)
+        look_at.x - sin(camera_angle) * player_camera.distance,
+        look_at.y + sin (player_camera.vertical_angle) * player_camera.distance,
+        look_at.z + cos(camera_angle) * player_camera.distance)
     return Camera(origin: camera_origin, lookat: look_at)
 }

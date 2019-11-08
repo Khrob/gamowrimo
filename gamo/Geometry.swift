@@ -10,9 +10,22 @@ import MetalKit
 
 struct Capsule
 {
-    var start :Vector4
-    var end   :Vector4
+    var start  : Vector4    // Start Sphere
+    var end    : Vector4    // End Sphere
+    var centre : Vector3    // Centre of the whole thing
+    var radius : Float      // Bounding radius
+    
+    init (start s:Vector4, end e:Vector4)
+    {
+        start = s
+        end = e
+        let delta = Vector3(s - e)
+        centre = Vector3(s) + Vector3(delta.x, delta.y, delta.z) / Float(2.0)
+        radius = (s.w + e.w + delta.magnitude)
+    }
 }
+
+
 
 var capsules_buffer : MTLBuffer!
 

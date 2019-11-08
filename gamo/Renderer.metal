@@ -25,6 +25,8 @@ Capsule
 {
     float4  start;
     float4  end;
+    float3  centre;
+    float   bounding_radius;
 };
 
 struct
@@ -40,6 +42,19 @@ float
 dot2 (vector_float3 v)
 {
     return dot(v,v);
+}
+
+float
+plane (float3 p)
+{
+    return p.y - ((sin(p.x) + sin(p.z)) / 3.0);
+}
+
+float
+sphere ( vector_float3 p, vector_float3 c, float r )
+{
+    float4 sphere = vector_float4(c,r);
+    return length(p - sphere.xyz) - sphere.w;
 }
 
 float
@@ -67,17 +82,11 @@ round_cone (vector_float3 p, vector_float3 a, vector_float3 b, float r1, float r
                             return (sqrt(x2*a2*il2)+y*rr)*il2 - r1;
 }
 
-float
-sphere ( vector_float3 p, vector_float3 c, float r )
-{
-    float4 sphere = vector_float4(c,r);
-    return length(p - sphere.xyz) - sphere.w;
-}
 
 float
 get_distance (float3 p, constant Capsule * capsules, Uniforms uniforms)
 {
-    float plane_distance = p.y;
+    float plane_distance = plane(p);
     
     float cd = MAX_DISTANCE;
     
@@ -134,7 +143,7 @@ float3x3
 set_camera (vector_float3 origin, vector_float3 at, float roll )
 {
     vector_float3 cw = normalize(at-origin);
-    vector_float3 cp = vector_float3(sin(roll), cos(roll),0.0);
+    vector_float3 cp = vector_float3(sin(roll), cos(roll), 0.0);
     vector_float3 cu = normalize(cross(cw,cp));
     vector_float3 cv = cross(cu,cw);
     return float3x3 ( cu, cv, cw );
@@ -148,10 +157,9 @@ compute (texture2d<float, access::write> output [[texture(0)]],
          constant Uniforms &uniforms [[ buffer(0) ]],
          constant Capsule  &capsules [[ buffer(1) ]])
 {
-    int width = output.get_width();
-    int height = output.get_height();
-    float2 resolution = float2(width,height);
-    vector_float2 uv = vector_float2(float2(gid)-.5*resolution)/resolution[1];
+    float2 resolution = float2(output.get_width(),output.get_height());
+    float2 uv = float2(float2(gid)-0.5*resolution)/output.get_height();
+    
     float3x3 ca = set_camera( uniforms.camera_origin, uniforms.camera_lookat, M_PI_F );
     float fov = 0.5;
     float3 direction = ca * normalize( float3(uv, fov) );
