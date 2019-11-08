@@ -63,7 +63,6 @@ func + (lhs:Vector4, rhs:Vector4) -> Vector4
     return Vector4(x: lhs.x+rhs.x, y: lhs.y+rhs.y, z: lhs.z+rhs.z, w: lhs.w+rhs.w)
 }
 
-
 func / (lhs:Vector3, rhs:Float) -> Vector3
 {
     return Vector3(lhs.x/rhs, lhs.y/rhs, lhs.z/rhs)
@@ -72,6 +71,16 @@ func / (lhs:Vector3, rhs:Float) -> Vector3
 func / (lhs:Vector4, rhs:Float) -> Vector4
 {
     return Vector4(x: lhs.x/rhs, y: lhs.y/rhs, z: lhs.z/rhs, w: lhs.w/rhs)
+}
+
+func * (lhs:Vector3, rhs:Float) -> Vector3
+{
+    return Vector3(lhs.x*rhs, lhs.y*rhs, lhs.z*rhs)
+}
+
+func * (lhs:Vector4, rhs:Float) -> Vector4
+{
+    return Vector4(x: lhs.x*rhs, y: lhs.y*rhs, z: lhs.z*rhs, w: lhs.w*rhs)
 }
 
 var render_device : MTLDevice!

@@ -18,10 +18,12 @@ struct Capsule
     init (start s:Vector4, end e:Vector4)
     {
         start = s
-        end = e
+        end   = e
         let delta = Vector3(s - e)
-        centre = Vector3(s) + Vector3(delta.x, delta.y, delta.z) / Float(2.0)
-        radius = (s.w + e.w + delta.magnitude)
+        let length = (delta.magnitude + s.w + e.w) / 2.0
+        let normal = delta.normalized
+        centre = Vector3(s) + normal * length
+        radius = length / 2.0
     }
 }
 
