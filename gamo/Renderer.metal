@@ -27,7 +27,7 @@ Round_Cone
     float4  end;
     
     // Bounding Sphere
-    float3  bs_centre;
+    packed_float3  bs_centre;
     float   bs_radius;
 };
 
@@ -39,7 +39,7 @@ Capsule
     float   radius;
     
     // Bounding Sphere
-    float3  bs_centre;
+    packed_float3  bs_centre;
     float   bs_radius;
 };
 
