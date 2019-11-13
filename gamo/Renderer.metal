@@ -189,15 +189,23 @@ compute (texture2d<float, access::write> output [[texture(0)]],
     float2 resolution = float2(output.get_width(),output.get_height());
     float2 uv = float2(float2(gid)-0.5*resolution)/output.get_height();
     
+    float    fov = 0.5;
     float3x3 ca = set_camera( uniforms.camera_origin, uniforms.camera_lookat, M_PI_F );
-    float  fov = 0.5;
+    
+    
     float3 direction = ca * normalize( float3(uv, fov) );
     float  d = ray_march (uniforms.camera_origin, direction, &round_cones, uniforms);
-    float3 p = uniforms.camera_origin + (direction * d);
-    float  diffuse = get_light(p, uniforms, &round_cones);
-    diffuse = pow(diffuse, 0.4545);
-    float4 colour = float4 (float3(diffuse),1.);
-    output.write (colour, gid);
+    
+    if (d < MAX_DISTANCE) {
+        float3 p = uniforms.camera_origin + (direction * d);
+        float  diffuse = get_light(p, uniforms, &round_cones);
+        diffuse = pow(diffuse, 0.4545);
+        float4 colour = float4 (float3(diffuse),1.);
+        output.write (colour, gid);
+    }
+    else {
+        output.write (float4(0.8*(.5+uv.y),0.8*(.5+uv.y),1.0,1.0), gid);
+    }
 }
 
 
