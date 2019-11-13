@@ -21,12 +21,26 @@ using namespace metal;
 #define MAX_STEPS        100
 
 struct
-Capsule
+Round_Cone
 {
     float4  start;
     float4  end;
-    float3  centre;
-    float   bounding_radius;
+    
+    // Bounding Sphere
+    float3  bs_centre;
+    float   bs_radius;
+};
+
+struct
+Capsule
+{
+    float3  start;
+    float3  end;
+    float   radius;
+    
+    // Bounding Sphere
+    float3  bs_centre;
+    float   bs_radius;
 };
 
 struct
@@ -47,7 +61,7 @@ dot2 (vector_float3 v)
 float
 plane (float3 p)
 {
-    return p.y - ((sin(p.x) + sin(p.z)) / 3.0);
+    return p.y;
 }
 
 float
@@ -58,8 +72,11 @@ sphere ( vector_float3 p, vector_float3 c, float r )
 }
 
 float
-round_cone (vector_float3 p, vector_float3 a, vector_float3 b, float r1, float r2)
+round_cone (vector_float3 p, vector_float3 a, vector_float3 b, float r1, float r2, float3 bounding_centre, float bounding_radius)
 {
+    float distance_to_bounding = sphere(p, bounding_centre, bounding_radius);
+    if (distance_to_bounding > 0) { return MAX_DISTANCE; }
+    
     // sampling independent computations (only depend on shape)
     vector_float3  ba = b - a;
     float l2 = dot(ba,ba);
@@ -82,17 +99,25 @@ round_cone (vector_float3 p, vector_float3 a, vector_float3 b, float r1, float r
                             return (sqrt(x2*a2*il2)+y*rr)*il2 - r1;
 }
 
+float
+cylinder (float3 p, Capsule c)
+{
+    float3 ps = p-c.start, es = c.end - c.start;
+    float  h = dot(ps, es)/dot(es,es);
+    h = clamp(h, 0.0, 1.0);
+    return length( ps - es*h ) - c.radius;
+}
 
 float
-get_distance (float3 p, constant Capsule * capsules, Uniforms uniforms)
+get_distance (float3 p, constant Round_Cone * capsules, Uniforms uniforms)
 {
     float plane_distance = plane(p);
     
     float cd = MAX_DISTANCE;
     
     for (int i=0; i<uniforms.capsule_count; i++) {
-        Capsule c = capsules[i];
-        float d0 = round_cone(p, c.start.xyz, c.end.xyz, c.start.w, c.end.w);
+        Round_Cone c = capsules[i];
+        float d0 = round_cone(p, c.start.xyz, c.end.xyz, c.start.w, c.end.w, c.bs_centre, c.bs_radius);
         if (d0 < cd) { cd = d0; }
     }
     
@@ -100,13 +125,13 @@ get_distance (float3 p, constant Capsule * capsules, Uniforms uniforms)
 }
 
 float
-ray_march (float3 origin, float3 direction, constant Capsule * capsules, Uniforms uniforms)
+ray_march (float3 origin, float3 direction, constant Round_Cone * capsules, Uniforms uniforms)
 {
     float distance = 0.;
     for (int i=0; i<MAX_STEPS; i++)
     {
         float3 p = origin + direction * distance;
-        float ds = get_distance(p, capsules, uniforms);
+        float ds = min (get_distance(p, capsules, uniforms), 1.0); // (MAX_DISTANCE / MAX_STEPS));
         distance += ds;
         if (ds < SURFACE_DISTANCE || distance > MAX_DISTANCE) break;
     }
@@ -114,7 +139,7 @@ ray_march (float3 origin, float3 direction, constant Capsule * capsules, Uniform
 }
 
 float3
-get_normal (vector_float3 p, constant Capsule * capsules, Uniforms uniforms)
+get_normal (vector_float3 p, constant Round_Cone * capsules, Uniforms uniforms)
 {
     float d = get_distance(p, capsules, uniforms);
     vector_float2 e = float2(0.01, 0);
@@ -127,7 +152,7 @@ get_normal (vector_float3 p, constant Capsule * capsules, Uniforms uniforms)
 }
 
 float
-get_light (float3 p, Uniforms uniforms, constant Capsule * capsules)
+get_light (float3 p, Uniforms uniforms, constant Round_Cone * capsules)
 {
     vector_float3 light_pos = float3(0, 5, 6);
     light_pos.xz += vector_float2(sin(uniforms.t), cos(uniforms.t)) * 4;
@@ -153,19 +178,20 @@ set_camera (vector_float3 origin, vector_float3 at, float roll )
 kernel
 void
 compute (texture2d<float, access::write> output [[texture(0)]],
-         uint2 gid [[thread_position_in_grid]],
-         constant Uniforms &uniforms [[ buffer(0) ]],
-         constant Capsule  &capsules [[ buffer(1) ]])
+         uint2    gid                     [[ thread_position_in_grid ]],
+         constant Uniforms   &uniforms    [[ buffer(0) ]],
+         constant Round_Cone &round_cones [[ buffer(1) ]],
+         constant Capsule    &capsules    [[ buffer(2) ]])
 {
     float2 resolution = float2(output.get_width(),output.get_height());
     float2 uv = float2(float2(gid)-0.5*resolution)/output.get_height();
     
     float3x3 ca = set_camera( uniforms.camera_origin, uniforms.camera_lookat, M_PI_F );
-    float fov = 0.5;
+    float  fov = 0.5;
     float3 direction = ca * normalize( float3(uv, fov) );
-    float  d = ray_march (uniforms.camera_origin, direction, &capsules, uniforms);
+    float  d = ray_march (uniforms.camera_origin, direction, &round_cones, uniforms);
     float3 p = uniforms.camera_origin + (direction * d);
-    float  diffuse = get_light(p, uniforms, &capsules);
+    float  diffuse = get_light(p, uniforms, &round_cones);
     diffuse = pow(diffuse, 0.4545);
     float4 colour = float4 (float3(diffuse),1.);
     output.write (colour, gid);

@@ -36,7 +36,7 @@ class Metal_View : MTKView
         startup()
         
         uniforms_buffer = make_uniforms_buffer(device!, uniforms: &uniforms)
-        capsules_buffer = make_capsules_buffer(device!, geometry: &capsule_geometry)
+        round_cone_buffer = make_round_cones_buffer(device!, geometry: &capsule_geometry)
     }
     
     override func draw()
@@ -56,7 +56,7 @@ class Metal_View : MTKView
             commandEncoder.setComputePipelineState(compute_pipeline_state)
             commandEncoder.setTexture(drawable.texture, index: 0)
             commandEncoder.setBuffer(uniforms_buffer, offset: 0, index: 0)
-            commandEncoder.setBuffer(capsules_buffer, offset: 0, index: 1)
+            commandEncoder.setBuffer(round_cone_buffer, offset: 0, index: 1)
             commandEncoder.dispatchThreadgroups(thread_groups, threadsPerThreadgroup: thread_group_count)
             commandEncoder.endEncoding()
             

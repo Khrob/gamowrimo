@@ -9,9 +9,9 @@
 import Foundation
 
 var origin_geometry = [
-    Capsule(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 3, z: 0, w: 0.10)),
-    Capsule(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   3, y: 0, z: 0, w: 0.20)),
-    Capsule(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 0, z: 3, w: 0.10)),
+    Round_Cone(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 3, z: 0, w: 0.10)),
+    Round_Cone(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   3, y: 0, z: 0, w: 0.20)),
+    Round_Cone(start: Vector4(x:   0, y: 0, z:   0, w: 0.0),   end: Vector4(x:   0, y: 0, z: 3, w: 0.10)),
 ]
 
 struct Player
@@ -38,8 +38,8 @@ struct Camera
 
 var player = Player(position: Vector3(), direction: 0, height: 1.0)
 var player_camera = Player_Camera(vertical_angle: 0, horizontal_angle: 0, distance: 2.0)
-var capsule_geometry:[Capsule] = []
-var world_geometry:[Capsule] = []
+var capsule_geometry:[Round_Cone] = []
+var world_geometry:[Round_Cone] = []
 
 // MARK: Main Callbacks
 
@@ -49,7 +49,7 @@ func startup ()
     world_geometry = generate_world_geo(30)
     capsule_geometry.removeAll()
     capsule_geometry.append(contentsOf: origin_geometry)
-    update_capsules(&capsule_geometry)
+    update_round_cones(&capsule_geometry)
 }
 
 func update ()
@@ -66,12 +66,12 @@ func update ()
     capsule_geometry.append(contentsOf: origin_geometry)
     capsule_geometry.append(contentsOf: world_geometry)
     capsule_geometry.append(contentsOf: player_geo())
-    update_capsules(&capsule_geometry)
+    update_round_cones(&capsule_geometry)
 }
 
-func generate_world_geo (_ count:Int) -> [Capsule]
+func generate_world_geo (_ count:Int) -> [Round_Cone]
 {
-    var capsules:[Capsule] = []
+    var capsules:[Round_Cone] = []
     let world_width:Float = 100.0
     
     for _ in 0 ... count {
@@ -81,7 +81,7 @@ func generate_world_geo (_ count:Int) -> [Capsule]
         let r = Float(drand48() * 2.0)
         let h = Float(drand48() * 10.0)
         
-        let c = Capsule(start: Vector4(x: x, y: r, z: z, w: r),
+        let c = Round_Cone(start: Vector4(x: x, y: r, z: z, w: r),
                         end: Vector4(x: x, y: r+h, z: z, w: r / 4.0))
         
         capsules.append(c)
@@ -89,15 +89,15 @@ func generate_world_geo (_ count:Int) -> [Capsule]
     return capsules
 }
 
-func player_geo () -> [Capsule]
+func player_geo () -> [Round_Cone]
 {
-    var player_capsules:[Capsule] = []
+    var player_capsules:[Round_Cone] = []
     let p_bottom = Vector4(x: player.position.x, y: player.position.y+0.25, z: player.position.z, w: 0.25)
     var p_top = p_bottom
     p_top.y += player.height
     p_top.w = 0.2
-    let player_capsule = Capsule(start: p_bottom, end: p_top)
-    var player_nose = Capsule(start: p_bottom, end: p_top)
+    let player_capsule = Round_Cone(start: p_bottom, end: p_top)
+    var player_nose = Round_Cone(start: p_bottom, end: p_top)
     player_nose.start.y += (player.height*0.75)
     player_nose.start.w = 0.2
     player_nose.end.y   = player_nose.start.y
@@ -134,7 +134,7 @@ func respond_to_input ()
         player.position.x -= sin (player.direction) * Movement_Scale
     }
     
-    player.position.y = (sin(player.position.x) + sin(player.position.z)) / 3.0
+//    player.position.y = 20.0
 }
 
 func camera_position (_ player:Player, _ player_camera:Player_Camera) -> Camera
