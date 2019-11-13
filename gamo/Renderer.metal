@@ -131,9 +131,9 @@ ray_march (float3 origin, float3 direction, constant Round_Cone * capsules, Unif
     for (int i=0; i<MAX_STEPS; i++)
     {
         float3 p = origin + direction * distance;
-        float ds = min (get_distance(p, capsules, uniforms), 1.0); // (MAX_DISTANCE / MAX_STEPS));
+        float ds = get_distance(p, capsules, uniforms);
         distance += ds;
-        if (ds < SURFACE_DISTANCE || distance > MAX_DISTANCE) break;
+        if (ds < SURFACE_DISTANCE || abs(distance) > MAX_DISTANCE) break;
     }
     return distance;
 }
