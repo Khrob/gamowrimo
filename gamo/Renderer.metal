@@ -59,9 +59,15 @@ dot2 (vector_float3 v)
 }
 
 float
-plane (float3 p)
+plane_flat (float3 p)
 {
     return p.y;
+}
+
+float
+plane (float3 p, float3 n)
+{
+    return dot(p, normalize(n)) - (sin(p.x) / 3) - (sin(p.z) / 6.);
 }
 
 float
@@ -73,10 +79,7 @@ sphere ( vector_float3 p, vector_float3 c, float r )
 
 float
 round_cone (vector_float3 p, vector_float3 a, vector_float3 b, float r1, float r2, float3 bounding_centre, float bounding_radius)
-{
-    float distance_to_bounding = sphere(p, bounding_centre, bounding_radius);
-    if (distance_to_bounding > 0) { return MAX_DISTANCE; }
-    
+{   
     // sampling independent computations (only depend on shape)
     vector_float3  ba = b - a;
     float l2 = dot(ba,ba);
@@ -111,7 +114,7 @@ cylinder (float3 p, Capsule c)
 float
 get_distance (float3 p, constant Round_Cone * capsules, Uniforms uniforms)
 {
-    float plane_distance = plane(p);
+    float plane_distance = plane(p, float3(0,1,0));
     
     float cd = MAX_DISTANCE;
     
