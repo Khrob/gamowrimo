@@ -55,18 +55,20 @@ func startup ()
 func update ()
 {
     respond_to_input()
-    uniforms.time += 0.05
-    uniforms.capsule_count = Int8(capsule_geometry.count)
     
     let camera = camera_position(player, player_camera)
     uniforms.camera_origin = camera.origin
     uniforms.camera_lookat = camera.lookat
-    update_uniforms()
+    
     capsule_geometry.removeAll()
     capsule_geometry.append(contentsOf: origin_geometry)
     capsule_geometry.append(contentsOf: world_geometry)
     capsule_geometry.append(contentsOf: player_geo())
     update_round_cones(&capsule_geometry)
+    
+    uniforms.time += 0.05
+    uniforms.capsule_count = Int8(capsule_geometry.count)
+    update_uniforms()
 }
 
 func generate_world_geo (_ count:Int) -> [Round_Cone]
