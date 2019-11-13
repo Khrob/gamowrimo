@@ -94,20 +94,23 @@ func generate_world_geo (_ count:Int) -> [Round_Cone]
 func player_geo () -> [Round_Cone]
 {
     var player_capsules:[Round_Cone] = []
-    let p_bottom = Vector4(x: player.position.x, y: player.position.y+0.25, z: player.position.z, w: 0.25)
+    let bottom_radius:Float = 0.25
+    
+    let p_bottom = Vector4(x: player.position.x, y: player.position.y+bottom_radius, z: player.position.z, w: bottom_radius)
     var p_top = p_bottom
     p_top.y += player.height
-    p_top.w = 0.2
-    let player_capsule = Round_Cone(start: p_bottom, end: p_top)
-    var player_nose = Round_Cone(start: p_bottom, end: p_top)
-    player_nose.start.y += (player.height*0.75)
-    player_nose.start.w = 0.2
-    player_nose.end.y   = player_nose.start.y
-    player_nose.end.x   += sin(player.direction)
-    player_nose.end.z   += cos(player.direction)
-    player_nose.end.w = 0.1
+    p_top.w = 0.0
+    
+    let player_capsule = Round_Cone (start: p_bottom, end: p_top)
+    var player_nose    = Round_Cone (start: p_top,    end: p_top)
+    
+    player_nose.end.x += 0.5 * sin(player.direction)
+    player_nose.end.z += 0.5 * cos(player.direction)
+    player_nose.end.w  = 0.1
+    
     player_capsules.append(player_capsule)
     player_capsules.append(player_nose)
+    
     return player_capsules
 }
 
