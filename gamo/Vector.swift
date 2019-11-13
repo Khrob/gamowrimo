@@ -83,3 +83,8 @@ func * (lhs:Vector4, rhs:Float) -> Vector4
     return Vector4(x: lhs.x*rhs, y: lhs.y*rhs, z: lhs.z*rhs, w: lhs.w*rhs)
 }
 
+infix operator •: AdditionPrecedence
+func • (lhs:Vector3, rhs:Vector3) -> Float
+{
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+}
