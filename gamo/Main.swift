@@ -46,7 +46,7 @@ var world_geometry:[Round_Cone] = []
 func startup ()
 {
     uniforms = Uniforms(time: 0, camera_origin: Vector3(0, 2, -10), camera_lookat: Vector3(), capsule_count: Int8(capsule_geometry.count))
-    world_geometry = generate_world_geo(30)
+    world_geometry = generate_world_geo(10)
     capsule_geometry.removeAll()
     capsule_geometry.append(contentsOf: origin_geometry)
     update_round_cones(&capsule_geometry)
