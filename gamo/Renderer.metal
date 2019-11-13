@@ -18,7 +18,7 @@ using namespace metal;
 
 #define SURFACE_DISTANCE 0.01
 #define MAX_DISTANCE     100.0
-#define MAX_STEPS        100
+#define MAX_STEPS        64
 
 struct
 Round_Cone
