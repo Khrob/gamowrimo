@@ -136,7 +136,8 @@ func respond_to_input ()
         player.position.x -= sin (player.direction) * Movement_Scale
     }
     
-//    player.position.y = 20.0
+    let y = sin(player.position.x) / 3.0 + sin(player.position.z) / 6.0
+    player.position.y = y
 }
 
 func camera_position (_ player:Player, _ player_camera:Player_Camera) -> Camera
