@@ -158,9 +158,9 @@ get_light (float3 p, Uniforms uniforms, constant Round_Cone * capsules)
     light_pos.xz += vector_float2(sin(uniforms.t), cos(uniforms.t)) * 4;
     vector_float3 l = normalize(light_pos-p);
     vector_float3 n = get_normal(p, capsules, uniforms);
-    float diff = clamp(dot(n,l), 0., 1.);
+    float diff = clamp(dot(n,l), 0.15, 1.);
     float d = ray_march(p+n*SURFACE_DISTANCE*2., l, capsules, uniforms);
-    if (d < length(light_pos-p)) diff *= .5;
+    if (d < length(light_pos-p)) diff *= .15;
     return diff;
 }
 
